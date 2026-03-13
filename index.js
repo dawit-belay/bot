@@ -27,19 +27,22 @@ function buildTelegramOpts() {
   return opts;
 }
 
-const TELEGRAM_TIMEOUT_MS = 15000;
+const TELEGRAM_TIMEOUT_MS = parseInt(process.env.TELEGRAM_TIMEOUT_MS || '60000', 10);
 
 async function launchBotWithRetry(maxRetries = 5) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Telegram connection timeout (15s). VPN/proxy may not be working.')), TELEGRAM_TIMEOUT_MS)
-      );
-      await Promise.race([
-        bot.telegram.deleteWebhook({ drop_pending_updates: false }),
-        timeoutPromise
-      ]);
-      await Promise.race([bot.launch(), timeoutPromise]);
+      const withTimeout = (p) =>
+        TELEGRAM_TIMEOUT_MS > 0
+          ? Promise.race([
+              p,
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error(`Telegram connection timeout (${TELEGRAM_TIMEOUT_MS / 1000}s)`)), TELEGRAM_TIMEOUT_MS)
+              )
+            ])
+          : p;
+      await withTimeout(bot.telegram.deleteWebhook({ drop_pending_updates: false }));
+      await withTimeout(bot.launch());
       return;
     } catch (err) {
       const is409 = err?.response?.error_code === 409 || err?.message?.includes('409');
