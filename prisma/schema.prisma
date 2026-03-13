@@ -8,14 +8,13 @@ datasource db {
 }
 
 model User {
-  telegramId BigInt   @id
-  username   String?
-  name       String
-  balance    Int      @default(100)
-  wins       Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
+  telegramId  BigInt       @id
+  username    String?
+  name        String
+  balance     Int          @default(100)
+  wins        Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   deposits    Deposit[]
   gamePlayers GamePlayer[]
 }
@@ -31,30 +30,28 @@ model Deposit {
 }
 
 model Cartela {
-  id       Int      @id @default(autoincrement())
-  numbers  Json
-  createdAt DateTime @default(now())
-
+  id          Int          @id @default(autoincrement())
+  numbers     Json
+  createdAt   DateTime     @default(now())
   gamePlayers GamePlayer[]
 }
 
 model Game {
-  id             Int       @id @default(autoincrement())
-  status         String    @default("waiting") // waiting | countdown | playing | ended
-  countdown      Int?      // seconds left (during countdown phase)
-  totalPool      Int       @default(0)
-  houseCut       Int       @default(0)
-  winnerAmount   Int?
-  winnerId       BigInt?
-  winners        Json      @default("[]") // [userId] for ended phase
-  calledNumbers  Json      @default("[]")
-  playerCount    Int       @default(0)
-  message        String?   // e.g. "No winner this round!" on ended
-  createdAt      DateTime  @default(now())
-  startedAt      DateTime?
-  finishedAt     DateTime?
-
-  gamePlayers GamePlayer[]
+  id            Int          @id @default(autoincrement())
+  status        String       @default("waiting")
+  countdown     Int?
+  totalPool     Int          @default(0)
+  houseCut      Int          @default(0)
+  winnerAmount  Int?
+  winnerId      BigInt?
+  winners       Json         @default("[]")
+  calledNumbers Json         @default("[]")
+  playerCount   Int          @default(0)
+  message       String?
+  createdAt     DateTime     @default(now())
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  gamePlayers   GamePlayer[]
 
   @@index([status])
 }
@@ -65,10 +62,9 @@ model GamePlayer {
   gameId    Int
   cartelaId Int
   joinedAt  DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
-  game    Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  cartela Cartela @relation(fields: [cartelaId], references: [id], onDelete: Cascade)
+  cartela   Cartela  @relation(fields: [cartelaId], references: [id], onDelete: Cascade)
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([gameId, userId])
   @@unique([gameId, cartelaId])
