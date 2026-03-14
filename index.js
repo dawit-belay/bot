@@ -6,9 +6,7 @@ import { startApi } from './api.js';
 import { initStorage, getUser, registerUser, addDeposit, getBalance } from './storage.js';
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-//const MINI_APP_URL = process.env.MINI_APP_URL || 'https://your-mini-app-url.com';
-//const MINI_APP_URL = 'https://mini-app-next-tau.vercel.app/';
-const MINI_APP_URL = 'https://wsacollege.com/mini-app/';
+const MINI_APP_URL = process.env.MINI_APP_URL || 'https://your-mini-app-url.com/mini-app';
 const PROXY = process.env.TELEGRAM_PROXY || process.env.HTTPS_PROXY;
 
 if (!BOT_TOKEN) {
